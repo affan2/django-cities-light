@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import os
+import datetime
 import time
 import os.path
 import logging
@@ -14,11 +15,12 @@ try:
 except ImportError:
     import pickle
 
-import progressbar
-
+from django.db import transaction
 from django.core.management.base import BaseCommand
-from django.db import transaction, reset_queries
+from django.db import transaction, reset_queries, IntegrityError
 from django.utils.encoding import force_text
+
+from ...vendor import progressbar
 
 from ...exceptions import *
 from ...signals import *
@@ -100,6 +102,7 @@ It is possible to force the import of files which weren't downloaded using the
             self.logger.info('Creating %s' % DATA_DIR)
             os.mkdir(DATA_DIR)
 
+        install_file_path = os.path.join(DATA_DIR, 'install_datetime')
         translation_hack_path = os.path.join(DATA_DIR, 'translation_hack')
 
         self.noinsert = options.get('noinsert', False)
@@ -131,6 +134,13 @@ It is possible to force the import of files which weren't downloaded using the
                 for f in options['force_import']:
                     if f in destination_file_name or f in url:
                         force_import = True
+
+            if not os.path.exists(install_file_path):
+                self.logger.info('Forced import of %s because data do not seem'
+                        ' to have installed successfuly yet, note that this is'
+                        ' equivalent to --force-import-all.' %
+                        destination_file_name)
+                force_import = True
 
             if downloaded or force_import:
                 self.logger.info('Importing %s' % destination_file_name)
@@ -183,6 +193,9 @@ It is possible to force the import of files which weren't downloaded using the
         self.logger.info('Importing parsed translation in the database')
         self.translation_import()
 
+        with open(install_file_path, 'wb+') as f:
+            pickle.dump(datetime.datetime.now(), f)
+
     def _get_country_id(self, code2):
         '''
         Simple lazy identity map for code2->country
@@ -214,6 +227,10 @@ It is possible to force the import of files which weren't downloaded using the
 
     def country_import(self, items):
         try:
+            country_items_pre_import.send(sender=self, items=items)
+        except InvalidItems:
+            return
+        try:
             country = Country.objects.get(code2=items[0])
         except Country.DoesNotExist:
             if self.noinsert:
@@ -221,12 +238,16 @@ It is possible to force the import of files which weren't downloaded using the
             country = Country(code2=items[0])
 
         country.name = force_text(items[4])
+        # Strip + prefix for consistency. Note that some countries have several
+        # prefixes ie. Puerto Rico
+        country.phone = items[12].replace('+', '')
         country.code3 = items[1]
         country.continent = items[8]
         country.tld = items[9][1:]  # strip the leading dot
         if items[16]:
             country.geoname_id = items[16]
-        country.save()
+
+        self.save(country)
 
     def region_import(self, items):
         try:
@@ -269,7 +290,7 @@ It is possible to force the import of files which weren't downloaded using the
             region.name_ascii = items[2]
 
         region.geoname_id = items[3]
-        region.save()
+        self.save(region)
 
     def city_import(self, items):
         try:
@@ -295,7 +316,21 @@ It is possible to force the import of files which weren't downloaded using the
                 raise
 
         try:
-            city = City.objects.get(**kwargs)
+            kwargs['region_id'] = self._get_region_id(items[8], items[10])
+        except Region.DoesNotExist:
+            pass
+
+        try:
+            try:
+                city = City.objects.get(**kwargs)
+            except City.MultipleObjectsReturned:
+                if 'region_id' not in kwargs:
+                    self.logger.warn(
+                        'Skipping because of invalid region: %s' % items)
+                    return
+                else:
+                    raise
+
         except City.DoesNotExist:
             try:
                 city = City.objects.get(geoname_id=items[0])
@@ -308,13 +343,9 @@ It is possible to force the import of files which weren't downloaded using the
                 city = City(**kwargs)
 
         save = False
-        if not city.region_id:
-            try:
-                city.region_id = self._get_region_id(items[8], items[10])
-            except Region.DoesNotExist:
-                pass
-            else:
-                save = True
+        if not city.region_id and 'region_id' in kwargs:
+            city.region_id = kwargs['region_id']
+            save = True
 
         if not city.name_ascii:
             # useful for cities with chinese names
@@ -347,7 +378,7 @@ It is possible to force the import of files which weren't downloaded using the
             save = True
 
         if save:
-            city.save()
+            self.save(city)
 
     def translation_parse(self, items):
         if not hasattr(self, 'translation_data'):
@@ -440,3 +471,16 @@ It is possible to force the import of files which weren't downloaded using the
 
                 i += 1
                 progress.update(i)
+
+        progress.finish()
+
+    def save(self, model):
+        sid = transaction.savepoint()
+
+        try:
+            model.save()
+        except IntegrityError as e:
+            self.logger.warning('Saving %s failed: %s' % (model, e))
+            transaction.savepoint_rollback(sid)
+        else:
+            transaction.savepoint_commit(sid)

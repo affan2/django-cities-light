@@ -21,6 +21,7 @@ class CountryAdmin(admin.ModelAdmin):
         'code3',
         'continent',
         'tld',
+        'phone',
     )
     search_fields = (
         'name',
@@ -62,6 +63,8 @@ class CityChangeList(ChangeList):
             request.GET = copy(request.GET)
             request.GET['q'] = to_search(request.GET['q'])
         return super(CityChangeList, self).get_query_set(request)
+    # Django 1.8 compat
+    get_queryset = get_query_set
 
 
 class CityAdmin(admin.ModelAdmin):
@@ -80,7 +83,7 @@ class CityAdmin(admin.ModelAdmin):
         'country__continent',
         'country',
     )
-    #form = CityForm
+    form = CityForm
 
     def get_changelist(self, request, **kwargs):
         return CityChangeList

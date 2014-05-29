@@ -2,6 +2,11 @@
 
 import os.path
 import posixpath
+import django
+
+SOUTH_MIGRATION_MODULES = {
+    'cities_light': 'cities_light.south_migrations',
+}
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -17,6 +22,11 @@ FIXTURE_DIRS = [
 ]
 
 MANAGERS = ADMINS
+
+CITIES_LIGHT_CITY_SOURCES = [
+    'http://download.geonames.org/export/dump/%s.zip' %
+    os.environ.get('CITIES_LIGHT_CITY_SOURCE', 'cities15000'),
+]
 
 DATABASES = {
     'default': {
@@ -129,8 +139,10 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'cities_light',
-    'south',
 )
+
+if django.VERSION < (1, 7):
+    INSTALLED_APPS += ('south',)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

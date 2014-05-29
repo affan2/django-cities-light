@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
+import shutil
 import sys
 import os
+import os.path
 
 
 # Utility function to read the README file.
@@ -10,9 +12,10 @@ import os
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+
 setup(
     name='django-cities-light',
-    version='2.1.1',
+    version='2.4.2',
     description='Simple alternative to django-cities',
     author='James Pic',
     author_email='jamespic@gmail.com',
@@ -25,13 +28,9 @@ setup(
     keywords = 'django cities countries postal codes',
     install_requires=[
         'six',
-        'progressbar==2.3dev',
         'unidecode>=0.04.13',
         'django_autoslug',
     ],
-    dependency_links=(
-       'https://github.com/coagulant/progressbar-python3/archive/master.zip#egg=progressbar-2.3dev',
-    ),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

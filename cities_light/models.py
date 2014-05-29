@@ -98,7 +98,6 @@ class Base(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class Country(Base):
     """
     Country model.
@@ -111,8 +110,9 @@ class Country(Base):
     continent = models.CharField(max_length=2, db_index=True,
         choices=CONTINENT_CHOICES)
     tld = models.CharField(max_length=5, blank=True, db_index=True)
+    phone = models.CharField(max_length=20, null=True)
 
-    class Meta:
+    class Meta(Base.Meta):
         verbose_name_plural = _('countries')
 
     def __str__(self):
@@ -134,8 +134,8 @@ class Region(Base):
 
     country = models.ForeignKey(Country)
 
-    class Meta:
-        unique_together = (('country', 'name'), )
+    class Meta(Base.Meta):
+        unique_together = (('country', 'name'), ('country', 'slug'))
         verbose_name = _('region/state')
         verbose_name_plural = _('regions/states')
 
@@ -190,8 +190,8 @@ class City(Base):
     feature_code = models.CharField(max_length=10, null=True, blank=True,
                                     db_index=True)
 
-    class Meta:
-        unique_together = (('region', 'name'),)
+    class Meta(Base.Meta):
+        unique_together = (('region', 'name'), ('region', 'slug'))
         verbose_name_plural = _('cities')
 
     def get_display_name(self):
