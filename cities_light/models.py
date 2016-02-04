@@ -3,11 +3,11 @@
 import six
 import re
 
-from django.utils.encoding import python_2_unicode_compatible
-
-from django.utils.encoding import force_text
+from django.conf import settings
 from django.db.models import signals
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from unidecode import unidecode
@@ -18,9 +18,12 @@ import autoslug
 
 from .settings import *
 
+from articles.managers import PublishedEntityManager, PublishedEntityTreeManager, TranslateEntityManager
+from hvad.models import TranslatableModel
+from general.models import CustomTranslatedFields
+from general.noconflict import classmaker
 
-__all__ = ['Country', 'Region', 'City', 'CONTINENT_CHOICES', 'to_search',
-    'to_ascii']
+__all__ = ['Country', 'Region', 'City', 'CONTINENT_CHOICES', 'to_search', 'to_ascii']
 
 ALPHA_REGEXP = re.compile('[\W_]+', re.UNICODE)
 
@@ -86,10 +89,16 @@ class Base(models.Model):
     slug = autoslug.AutoSlugField(populate_from='name_ascii')
     geoname_id = models.IntegerField(null=True, blank=True, unique=True)
     alternate_names = models.TextField(null=True, blank=True, default='')
+    default_language = models.CharField(
+        max_length=2,
+        choices=settings.LANGUAGES,
+        default='en',
+        verbose_name=_('Default language'),
+    )
 
     class Meta:
         abstract = True
-        ordering = ['name']
+        # ordering = ['name']
 
     def __str__(self):
         display_name = getattr(self, 'display_name', None)
@@ -98,12 +107,14 @@ class Base(models.Model):
         return self.name
 
 
-class Country(Base):
+class Country(Base, TranslatableModel):
     """
     Country model.
     """
-
-    name = models.CharField(max_length=200, unique=True)
+    translations = CustomTranslatedFields(
+        name=models.CharField(max_length=200),
+        meta={'unique_together': [('name', 'language_code', 'master')]},
+    )
 
     code2 = models.CharField(max_length=2, null=True, blank=True, unique=True)
     code3 = models.CharField(max_length=3, null=True, blank=True, unique=True)
@@ -112,8 +123,15 @@ class Country(Base):
     tld = models.CharField(max_length=5, blank=True, db_index=True)
     phone = models.CharField(max_length=20, null=True)
 
+    published = TranslateEntityManager()
+    objects = models.Manager()
+
     class Meta(Base.Meta):
         verbose_name_plural = _('countries')
+
+    @property
+    def name_(self):
+        return self.name
 
     def __str__(self):
         return self.name
@@ -122,22 +140,30 @@ signals.pre_save.connect(set_name_ascii, sender=Country)
 
 
 
-class Region(Base):
+class Region(Base, TranslatableModel):
     """
     Region/State model.
     """
+    translations = CustomTranslatedFields(
+        name=models.CharField(max_length=200),
+        display_name=models.CharField(max_length=200),
+        meta={'unique_together': [('name', 'language_code', 'master')]},
+    )
 
-    name = models.CharField(max_length=200, db_index=True)
-    display_name = models.CharField(max_length=200)
-    geoname_code = models.CharField(max_length=50, null=True, blank=True,
-        db_index=True)
-
+    geoname_code = models.CharField(max_length=50, null=True, blank=True,db_index=True)
     country = models.ForeignKey(Country)
 
+    published = TranslateEntityManager()
+    objects = models.Manager()
+
     class Meta(Base.Meta):
-        unique_together = (('country', 'name'), ('country', 'slug'))
+        unique_together = (('country', 'slug'))
         verbose_name = _('region/state')
         verbose_name_plural = _('regions/states')
+
+    @property
+    def name_(self):
+        return self.name
 
     def get_display_name(self):
         return '%s, %s' % (self.name, self.country.name)
@@ -168,31 +194,36 @@ class ToSearchTextField(models.TextField):
         return (field_class, args, kwargs)
 
 
-class City(Base):
+class City(Base, TranslatableModel):
     """
-    City model.
+    Region/State model.
     """
+    translations = CustomTranslatedFields(
+        name=models.CharField(max_length=200, db_index=True),
+        display_name=models.CharField(max_length=200),
+        meta={'unique_together': [('name', 'language_code', 'master')]},
+    )
 
-    name = models.CharField(max_length=200, db_index=True)
-    display_name = models.CharField(max_length=200)
+    search_names = ToSearchTextField(max_length=4000, db_index=INDEX_SEARCH_NAMES, blank=True, default='')
 
-    search_names = ToSearchTextField(max_length=4000,
-        db_index=INDEX_SEARCH_NAMES, blank=True, default='')
-
-    latitude = models.DecimalField(max_digits=8, decimal_places=5,
-        null=True, blank=True)
-    longitude = models.DecimalField(max_digits=8, decimal_places=5,
-        null=True, blank=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=5, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=8, decimal_places=5, null=True, blank=True)
 
     region = models.ForeignKey(Region, blank=True, null=True)
     country = models.ForeignKey(Country)
     population = models.BigIntegerField(null=True, blank=True, db_index=True)
-    feature_code = models.CharField(max_length=10, null=True, blank=True,
-                                    db_index=True)
+    feature_code = models.CharField(max_length=10, null=True, blank=True, db_index=True)
+
+    published = TranslateEntityManager()
+    objects = models.Manager()
 
     class Meta(Base.Meta):
-        unique_together = (('region', 'name'), ('region', 'slug'))
+        unique_together = (('region', 'slug'))
         verbose_name_plural = _('cities')
+
+    @property
+    def name_(self):
+        return self.name
 
     def get_display_name(self):
         if self.region_id:

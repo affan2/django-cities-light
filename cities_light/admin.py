@@ -8,15 +8,16 @@ from django.contrib.admin.views.main import ChangeList
 from .forms import *
 from .models import *
 from .settings import *
+from general.admin import CustomTranslatableAdmin
 
 
-class CountryAdmin(admin.ModelAdmin):
+class CountryAdmin(CustomTranslatableAdmin):
     """
     ModelAdmin for Country.
     """
 
     list_display = (
-        'name',
+        'name_',
         'code2',
         'code3',
         'continent',
@@ -24,7 +25,6 @@ class CountryAdmin(admin.ModelAdmin):
         'phone',
     )
     search_fields = (
-        'name',
         'name_ascii',
         'code2',
         'code3',
@@ -46,11 +46,11 @@ class RegionAdmin(admin.ModelAdmin):
         'country',
     )
     search_fields = (
-        'name',
+        'name_',
         'name_ascii',
     )
     list_display = (
-        'name',
+        'name_',
         'country',
     )
     form = RegionForm
@@ -72,7 +72,7 @@ class CityAdmin(admin.ModelAdmin):
     ModelAdmin for City.
     """
     list_display = (
-        'name',
+        'name_',
         'region',
         'country',
     )

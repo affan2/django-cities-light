@@ -3,11 +3,12 @@ from __future__ import unicode_literals
 from django import forms
 
 from .models import Country, Region, City
+from hvad.forms import TranslatableModelForm
 
 __all__ = ['CountryForm', 'RegionForm', 'CityForm']
 
 
-class CountryForm(forms.ModelForm):
+class CountryForm(TranslatableModelForm):
     """
     Country model form.
     """
