@@ -1,5 +1,7 @@
-from __future__ import unicode_literals
+from __future__ import division, unicode_literals
 
+import collections
+import itertools
 import os
 import datetime
 import time
@@ -15,18 +17,19 @@ try:
 except ImportError:
     import pickle
 
-from django.db import transaction
+from django.db import transaction, connection
 from django.core.management.base import BaseCommand
 from django.db import transaction, reset_queries, IntegrityError
 from django.utils.encoding import force_text
 
-from ...vendor import progressbar
+import progressbar
 
 from ...exceptions import *
 from ...signals import *
 from ...models import *
 from ...settings import *
 from ...geonames import Geonames
+
 
 
 class MemoryUsageWidget(progressbar.Widget):
@@ -96,7 +99,6 @@ It is possible to force the import of files which weren't downloaded using the
             print('Do not kill me !')
             self._travis_last_output = now
 
-    @transaction.commit_on_success
     def handle(self, *args, **options):
         if not os.path.exists(DATA_DIR):
             self.logger.info('Creating %s' % DATA_DIR)
@@ -115,8 +117,14 @@ It is possible to force the import of files which weren't downloaded using the
             progressbar.Percentage(),
             progressbar.Bar(),
         ]
+        sources = list(itertools.chain(
+            COUNTRY_SOURCES,
+            REGION_SOURCES,
+            CITY_SOURCES,
+            TRANSLATION_SOURCES,
+        ))
 
-        for url in SOURCES:
+        for url in sources:
             destination_file_name = url.split('/')[-1]
 
             force = options.get('force_all', False)
@@ -142,7 +150,7 @@ It is possible to force the import of files which weren't downloaded using the
                         destination_file_name)
                 force_import = True
 
-            if downloaded or force_import:
+            if downloaded or force_import or not os.path.isfile(translation_hack_path):
                 self.logger.info('Importing %s' % destination_file_name)
 
                 if url in TRANSLATION_SOURCES:
@@ -158,11 +166,11 @@ It is possible to force the import of files which weren't downloaded using the
                     widgets=self.widgets).start()
 
                 for items in geonames.parse():
-                    if url in CITY_SOURCES:
+                    if url in CITY_SOURCES and (downloaded or force_import):
                         self.city_import(items)
-                    elif url in REGION_SOURCES:
+                    elif url in REGION_SOURCES and (downloaded or force_import):
                         self.region_import(items)
-                    elif url in COUNTRY_SOURCES:
+                    elif url in COUNTRY_SOURCES and (downloaded or force_import):
                         self.country_import(items)
                     elif url in TRANSLATION_SOURCES:
                         # free some memory
@@ -186,7 +194,7 @@ It is possible to force the import of files which weren't downloaded using the
                     with open(translation_hack_path, 'w+') as f:
                         pickle.dump(self.translation_data, f)
 
-        if options.get('hack_translations', False):
+        if options.get('hack_translations', False) and os.path.isfile(translation_hack_path):
             with open(translation_hack_path, 'r') as f:
                 self.translation_data = pickle.load(f)
 
@@ -246,7 +254,6 @@ It is possible to force the import of files which weren't downloaded using the
         country.tld = items[9][1:]  # strip the leading dot
         if items[16]:
             country.geoname_id = items[16]
-
         self.save(country)
 
     def region_import(self, items):
@@ -256,13 +263,11 @@ It is possible to force the import of files which weren't downloaded using the
             return
 
         items = [force_text(x) for x in items]
-
         name = items[1]
         if not items[1]:
             name = items[2]
 
         code2, geoname_code = items[0].split('.')
-
         country_id = self._get_country_id(code2)
 
         if items[3]:
@@ -279,13 +284,10 @@ It is possible to force the import of files which weren't downloaded using the
 
         if not region.name:
             region.name = name
-
         if not region.country_id:
             region.country_id = country_id
-
         if not region.geoname_code:
             region.geoname_code = geoname_code
-
         if not region.name_ascii:
             region.name_ascii = items[2]
 
@@ -317,6 +319,7 @@ It is possible to force the import of files which weren't downloaded using the
 
         try:
             kwargs['region_id'] = self._get_region_id(items[8], items[10])
+
         except Region.DoesNotExist:
             pass
 
@@ -330,7 +333,6 @@ It is possible to force the import of files which weren't downloaded using the
                     return
                 else:
                     raise
-
         except City.DoesNotExist:
             try:
                 city = City.objects.get(geoname_id=items[0])
@@ -339,39 +341,30 @@ It is possible to force the import of files which weren't downloaded using the
             except City.DoesNotExist:
                 if self.noinsert:
                     return
-
                 city = City(**kwargs)
-
         save = False
         if not city.region_id and 'region_id' in kwargs:
             city.region_id = kwargs['region_id']
             save = True
-
         if not city.name_ascii:
             # useful for cities with chinese names
             city.name_ascii = items[2]
             save = True
-
         if not city.latitude:
             city.latitude = items[4]
             save = True
-
         if not city.longitude:
             city.longitude = items[5]
             save = True
-
         if not city.population:
             city.population = items[14]
             save = True
-
         if not city.feature_code:
             city.feature_code = items[7]
             save = True
-
         if not TRANSLATION_SOURCES and not city.alternate_names:
             city.alternate_names = force_text(items[3])
             save = True
-
         if not city.geoname_id:
             # city may have been added manually
             city.geoname_id = items[0]
@@ -431,9 +424,11 @@ It is possible to force the import of files which weren't downloaded using the
         for model_class, model_class_data in data.items():
             max += len(model_class_data.keys())
 
+        import pdb; pdb.set_trace()
         i = 0
         progress = progressbar.ProgressBar(maxval=max,
-                                           widgets=self.widgets).start()
+            widgets=self.widgets).start()
+
         for model_class, model_class_data in data.items():
             for geoname_id, geoname_data in model_class_data.items():
                 try:
@@ -443,9 +438,10 @@ It is possible to force the import of files which weren't downloaded using the
                 save = False
 
                 if not model.alternate_names:
-                    alternate_names = []
+                    alternate_names = set()
                 else:
-                    alternate_names = model.alternate_names.split(',')
+                    alternate_names = set(sorted(
+                        model.alternate_names.split(',')))
 
                 for lang, names in geoname_data.items():
                     if lang == 'post':
@@ -455,13 +451,13 @@ It is possible to force the import of files which weren't downloaded using the
 
                     for name in names:
                         name = force_text(name)
+
                         if name == model.name:
                             continue
 
-                        if name not in alternate_names:
-                            alternate_names.append(name)
+                        alternate_names.add(name)
 
-                alternate_names = u','.join(alternate_names)
+                alternate_names = u','.join(sorted(alternate_names))
                 if model.alternate_names != alternate_names:
                     model.alternate_names = alternate_names
                     save = True
