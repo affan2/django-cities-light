@@ -424,7 +424,6 @@ It is possible to force the import of files which weren't downloaded using the
         for model_class, model_class_data in data.items():
             max += len(model_class_data.keys())
 
-        import pdb; pdb.set_trace()
         i = 0
         progress = progressbar.ProgressBar(maxval=max,
             widgets=self.widgets).start()
