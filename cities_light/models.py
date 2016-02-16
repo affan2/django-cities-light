@@ -18,10 +18,9 @@ import autoslug
 
 from .settings import *
 
-from articles.managers import PublishedEntityManager, PublishedEntityTreeManager, TranslateEntityManager
+from articles.managers import TranslateEntityManager
 from hvad.models import TranslatableModel
 from general.models import CustomTranslatedFields
-from general.noconflict import classmaker
 
 __all__ = ['Country', 'Region', 'City', 'CONTINENT_CHOICES', 'to_search', 'to_ascii']
 
