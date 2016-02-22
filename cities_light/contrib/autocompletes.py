@@ -5,15 +5,51 @@ import autocomplete_light
 
 class CityAutocomplete(autocomplete_light.AutocompleteModelBase):
     search_fields = ('search_names',)
+    choices = City.published.language()
+
+    def choices_for_request(self):
+        """
+        Return a queryset based on `choices` using options `split_words`,
+        `search_fields` and `limit_choices`. Refer to the class-level
+        documentation for documentation on each of these options.
+        """
+        q = self.request.GET.get('q', '')
+        choices = City.published.language(self.request.LANGUAGE_CODE).filter(name__icontains=q)
+
+        return choices[0:self.limit_choices]
+
 
 
 class RegionAutocomplete(autocomplete_light.AutocompleteModelBase):
     search_fields = ('name', 'name_ascii')
+    choices = Region.published.language()
+
+    def choices_for_request(self):
+        """
+        Return a queryset based on `choices` using options `split_words`,
+        `search_fields` and `limit_choices`. Refer to the class-level
+        documentation for documentation on each of these options.
+        """
+        q = self.request.GET.get('q', '')
+        choices = Region.published.language(self.request.LANGUAGE_CODE).filter(name__icontains=q)
+
+        return choices[0:self.limit_choices]
 
 
 class CountryAutocomplete(autocomplete_light.AutocompleteModelBase):
     search_fields = ('name', 'name_ascii')
+    choices = Country.published.language()
 
+    def choices_for_request(self):
+        """
+        Return a queryset based on `choices` using options `split_words`,
+        `search_fields` and `limit_choices`. Refer to the class-level
+        documentation for documentation on each of these options.
+        """
+        q = self.request.GET.get('q', '')
+        choices = Country.published.language(self.request.LANGUAGE_CODE).filter(name__icontains=q)
+
+        return choices[0:self.limit_choices]
 
 class RestAutocompleteBase(autocomplete_light. AutocompleteRestModel):
     def model_for_source_url(self, url):
