@@ -226,8 +226,10 @@ class City(Base, TranslatableModel):
 
     def get_display_name(self):
         if self.region_id:
-            return '%s, %s, %s' % (self.name, self.region.name,
-                self.country.name)
+            try:
+                return '%s, %s, %s' % (self.name, self.region.name, self.country.name)
+            except:
+                return '%s, %s' % (self.name, self.country.name)
         else:
             return '%s, %s' % (self.name, self.country.name)
 signals.pre_save.connect(set_name_ascii, sender=City)
@@ -251,7 +253,13 @@ def city_search_names(sender, instance, **kwargs):
     if instance.alternate_names:
         city_names += instance.alternate_names.split(',')
 
-    if instance.region_id:
+    try:
+        instance.region.name
+        regoin_flag = True
+    except:
+        regoin_flag = False
+
+    if instance.region_id and regoin_flag:
         region_names = [instance.region.name]
         if instance.region.alternate_names:
             region_names += instance.region.alternate_names.split(',')
@@ -262,7 +270,7 @@ def city_search_names(sender, instance, **kwargs):
             if name not in search_names:
                 search_names.append(name)
 
-            if instance.region_id:
+            if instance.region_id and regoin_flag:
                 for region_name in region_names:
                     name = to_search(city_name + region_name + country_name)
                     if name not in search_names:
