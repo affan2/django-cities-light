@@ -5,7 +5,7 @@ import autocomplete_light
 
 class CityAutocomplete(autocomplete_light.AutocompleteModelBase):
     search_fields = ('search_names',)
-    choices = City.published.language()
+    choices = City.published.get_live_set()
 
     def choices_for_request(self):
         """
@@ -14,7 +14,7 @@ class CityAutocomplete(autocomplete_light.AutocompleteModelBase):
         documentation for documentation on each of these options.
         """
         q = self.request.GET.get('q', '')
-        choices = City.published.language(self.request.LANGUAGE_CODE).filter(name__icontains=q)
+        choices = City.published.get_live_set(language=self.request.LANGUAGE_CODE).filter(name__icontains=q)
 
         return choices[0:self.limit_choices]
 
@@ -22,7 +22,7 @@ class CityAutocomplete(autocomplete_light.AutocompleteModelBase):
 
 class RegionAutocomplete(autocomplete_light.AutocompleteModelBase):
     search_fields = ('name', 'name_ascii')
-    choices = Region.published.language()
+    choices = Region.published.get_live_set()
 
     def choices_for_request(self):
         """
@@ -31,14 +31,14 @@ class RegionAutocomplete(autocomplete_light.AutocompleteModelBase):
         documentation for documentation on each of these options.
         """
         q = self.request.GET.get('q', '')
-        choices = Region.published.language(self.request.LANGUAGE_CODE).filter(name__icontains=q)
+        choices = Region.published.get_live_set(language=self.request.LANGUAGE_CODE).filter(name__icontains=q)
 
         return choices[0:self.limit_choices]
 
 
 class CountryAutocomplete(autocomplete_light.AutocompleteModelBase):
     search_fields = ('name', 'name_ascii')
-    choices = Country.published.language()
+    choices = Country.published.get_live_set()
 
     def choices_for_request(self):
         """
@@ -47,7 +47,7 @@ class CountryAutocomplete(autocomplete_light.AutocompleteModelBase):
         documentation for documentation on each of these options.
         """
         q = self.request.GET.get('q', '')
-        choices = Country.published.language(self.request.LANGUAGE_CODE).filter(name__icontains=q)
+        choices = Country.published.get_live_set(language=self.request.LANGUAGE_CODE).filter(name__icontains=q)
 
         return choices[0:self.limit_choices]
 
