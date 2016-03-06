@@ -1,5 +1,4 @@
-
-
+import autoslug
 import six
 import re
 
@@ -12,13 +11,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from unidecode import unidecode
 
-from south.modelsinspector import add_introspection_rules
-
-import autoslug
-
 from .settings import *
 
-from articles.managers import TranslateEntityManager
+from articles.constants import STATE_TYPES
+from general.managers import TranslateEntityManager, CustomEntityManager
 from hvad.models import TranslatableModel
 from general.models import CustomTranslatedFields
 
@@ -88,12 +84,8 @@ class Base(models.Model):
     slug = autoslug.AutoSlugField(populate_from='name_ascii')
     geoname_id = models.IntegerField(null=True, blank=True, unique=True)
     alternate_names = models.TextField(null=True, blank=True, default='')
-    default_language = models.CharField(
-        max_length=2,
-        choices=settings.LANGUAGES,
-        default='en',
-        verbose_name=_('Default language'),
-    )
+    state = models.SmallIntegerField(verbose_name=_('Publish state'), choices=STATE_TYPES, default=1)
+    default_language = models.CharField(max_length=2, choices=settings.LANGUAGES, default='en', verbose_name=_('Default language'))
 
     class Meta:
         abstract = True
@@ -123,7 +115,7 @@ class Country(Base, TranslatableModel):
     phone = models.CharField(max_length=20, null=True)
 
     published = TranslateEntityManager()
-    objects = models.Manager()
+    objects = CustomEntityManager()
 
     class Meta(Base.Meta):
         verbose_name_plural = _('countries')
@@ -153,7 +145,7 @@ class Region(Base, TranslatableModel):
     country = models.ForeignKey(Country)
 
     published = TranslateEntityManager()
-    objects = models.Manager()
+    objects = CustomEntityManager()
 
     class Meta(Base.Meta):
         unique_together = (('country', 'slug'))
@@ -214,7 +206,7 @@ class City(Base, TranslatableModel):
     feature_code = models.CharField(max_length=10, null=True, blank=True, db_index=True)
 
     published = TranslateEntityManager()
-    objects = models.Manager()
+    objects = CustomEntityManager()
 
     class Meta(Base.Meta):
         unique_together = (('region', 'slug'))
