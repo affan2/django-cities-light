@@ -224,6 +224,7 @@ class City(Base, TranslatableModel):
                 return '%s, %s' % (self.name, self.country.name)
         else:
             return '%s, %s' % (self.name, self.country.name)
+
 signals.pre_save.connect(set_name_ascii, sender=City)
 signals.pre_save.connect(set_display_name, sender=City)
 

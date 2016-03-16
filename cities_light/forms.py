@@ -17,7 +17,7 @@ class CountryForm(TranslatableModelForm):
         exclude = ('name_ascii', 'slug', 'geoname_id')
 
 
-class RegionForm(forms.ModelForm):
+class RegionForm(TranslatableModelForm):
     """
     Region model form.
     """
@@ -27,7 +27,7 @@ class RegionForm(forms.ModelForm):
                    'geoname_code')
 
 
-class CityForm(forms.ModelForm):
+class CityForm(TranslatableModelForm):
     """
     City model form.
     """

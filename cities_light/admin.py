@@ -37,7 +37,7 @@ class CountryAdmin(CustomTranslatableAdmin):
 admin.site.register(Country, CountryAdmin)
 
 
-class RegionAdmin(admin.ModelAdmin):
+class RegionAdmin(CustomTranslatableAdmin):
     """
     ModelAdmin for Region.
     """
@@ -67,7 +67,7 @@ class CityChangeList(ChangeList):
     get_queryset = get_query_set
 
 
-class CityAdmin(admin.ModelAdmin):
+class CityAdmin(CustomTranslatableAdmin):
     """
     ModelAdmin for City.
     """
@@ -87,5 +87,18 @@ class CityAdmin(admin.ModelAdmin):
 
     def get_changelist(self, request, **kwargs):
         return CityChangeList
+
+    def save_model(self, request, obj, form, change):
+        """
+        Given a model instance save it to the database.
+        """
+        try:
+            translated_obj = obj.translations.get(language_code=obj.default_language)
+        except:
+            translated_obj = obj.translate(obj.default_language)
+        translated_obj.name = obj.name
+        translated_obj.display_name = obj.display_name
+        translated_obj.save()
+        obj.save()
 
 admin.site.register(City, CityAdmin)
