@@ -103,7 +103,19 @@ class Country(Base, TranslatableModel):
     Country model.
     """
     translations = CustomTranslatedFields(
-        name=models.CharField(max_length=200),
+        name=models.CharField(
+            max_length=200
+        ),
+        source_language=models.CharField(
+            max_length=2,
+            choices=settings.LANGUAGES,
+            default='en',
+            verbose_name=_('Source language')
+        ),
+        is_auto_translated=models.BooleanField(
+            verbose_name=_('Auto Translated'),
+            default=False
+        ),
         meta={'unique_together': [('name', 'language_code', 'master')]},
     )
 
@@ -113,6 +125,8 @@ class Country(Base, TranslatableModel):
         choices=CONTINENT_CHOICES)
     tld = models.CharField(max_length=5, blank=True, db_index=True)
     phone = models.CharField(max_length=20, null=True)
+
+    allow_translate = models.BooleanField(verbose_name=_('Allow Translate'), default=True)
 
     published = TranslateEntityManager()
     objects = CustomEntityManager()
@@ -136,13 +150,28 @@ class Region(Base, TranslatableModel):
     Region/State model.
     """
     translations = CustomTranslatedFields(
-        name=models.CharField(max_length=200),
-        display_name=models.CharField(max_length=200),
+        name=models.CharField(
+            max_length=200
+        ),
+        display_name=models.CharField(
+            max_length=200
+        ),
+        source_language=models.CharField(
+            max_length=2,
+            choices=settings.LANGUAGES,
+            default='en',
+            verbose_name=_('Source language')
+        ),
+        is_auto_translated=models.BooleanField(
+            verbose_name=_('Auto Translated'),
+            default=False
+        ),
         meta={'unique_together': [('name', 'language_code', 'master')]},
     )
 
     geoname_code = models.CharField(max_length=50, null=True, blank=True,db_index=True)
     country = models.ForeignKey(Country)
+    allow_translate = models.BooleanField(verbose_name=_('Allow Translate'), default=True)
 
     published = TranslateEntityManager()
     objects = CustomEntityManager()
@@ -190,8 +219,23 @@ class City(Base, TranslatableModel):
     Region/State model.
     """
     translations = CustomTranslatedFields(
-        name=models.CharField(max_length=200, db_index=True),
-        display_name=models.CharField(max_length=200),
+        name=models.CharField(
+            max_length=200,
+            db_index=True
+        ),
+        display_name=models.CharField(
+            max_length=200
+        ),
+        source_language=models.CharField(
+            max_length=2,
+            choices=settings.LANGUAGES,
+            default='en',
+            verbose_name=_('Source language')
+        ),
+        is_auto_translated=models.BooleanField(
+            verbose_name=_('Auto Translated'),
+            default=False
+        ),
         meta={'unique_together': [('name', 'language_code', 'master')]},
     )
 
@@ -204,6 +248,8 @@ class City(Base, TranslatableModel):
     country = models.ForeignKey(Country)
     population = models.BigIntegerField(null=True, blank=True, db_index=True)
     feature_code = models.CharField(max_length=10, null=True, blank=True, db_index=True)
+
+    allow_translate = models.BooleanField(verbose_name=_('Allow Translate'), default=True)
 
     published = TranslateEntityManager()
     objects = CustomEntityManager()
