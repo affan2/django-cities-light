@@ -128,8 +128,8 @@ class Country(Base, TranslatableModel):
 
     allow_translate = models.BooleanField(verbose_name=_('Allow Translate'), default=True)
 
-    published = TranslateEntityManager()
     objects = CustomEntityManager()
+    published = TranslateEntityManager()
 
     class Meta(Base.Meta):
         verbose_name_plural = _('countries')
@@ -173,8 +173,8 @@ class Region(Base, TranslatableModel):
     country = models.ForeignKey(Country)
     allow_translate = models.BooleanField(verbose_name=_('Allow Translate'), default=True)
 
-    published = TranslateEntityManager()
     objects = CustomEntityManager()
+    published = TranslateEntityManager()
 
     class Meta(Base.Meta):
         unique_together = (('country', 'slug'))
@@ -251,8 +251,8 @@ class City(Base, TranslatableModel):
 
     allow_translate = models.BooleanField(verbose_name=_('Allow Translate'), default=True)
 
-    published = TranslateEntityManager()
     objects = CustomEntityManager()
+    published = TranslateEntityManager()
 
     class Meta(Base.Meta):
         unique_together = (('region', 'slug'))
