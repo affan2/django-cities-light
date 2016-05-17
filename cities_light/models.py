@@ -13,10 +13,10 @@ from unidecode import unidecode
 
 from .settings import *
 
-from articles.constants import STATE_TYPES
+from general.constants import STATE_TYPES
 from general.managers import TranslateEntityManager, CustomEntityManager
+from general.fields import CustomTranslatedFields
 from hvad.models import TranslatableModel
-from general.models import CustomTranslatedFields
 
 __all__ = ['Country', 'Region', 'City', 'CONTINENT_CHOICES', 'to_search', 'to_ascii']
 
