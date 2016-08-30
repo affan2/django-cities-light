@@ -14,10 +14,9 @@ class CityAutocomplete(autocomplete_light.AutocompleteModelBase):
         documentation for documentation on each of these options.
         """
         q = self.request.GET.get('q', '')
-        choices = City.published.get_live_set(language=self.request.LANGUAGE_CODE).filter(name__icontains=q)
+        choices = City.published.get_live_set(language_code=self.request.LANGUAGE_CODE).filter(name__icontains=q)
 
         return choices[0:self.limit_choices]
-
 
 
 class RegionAutocomplete(autocomplete_light.AutocompleteModelBase):
@@ -31,7 +30,7 @@ class RegionAutocomplete(autocomplete_light.AutocompleteModelBase):
         documentation for documentation on each of these options.
         """
         q = self.request.GET.get('q', '')
-        choices = Region.published.get_live_set(language=self.request.LANGUAGE_CODE).filter(name__icontains=q)
+        choices = Region.published.get_live_set(language_code=self.request.LANGUAGE_CODE).filter(name__icontains=q)
 
         return choices[0:self.limit_choices]
 
@@ -47,7 +46,7 @@ class CountryAutocomplete(autocomplete_light.AutocompleteModelBase):
         documentation for documentation on each of these options.
         """
         q = self.request.GET.get('q', '')
-        choices = Country.published.get_live_set(language=self.request.LANGUAGE_CODE).filter(name__icontains=q)
+        choices = Country.published.get_live_set(language_code=self.request.LANGUAGE_CODE).filter(name__icontains=q)
 
         return choices[0:self.limit_choices]
 
