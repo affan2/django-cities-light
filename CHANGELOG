@@ -1,3 +1,103 @@
+2018-05-27 3.5.0
+
+    Fix lack of support of Django 2.0 by django_autoslug #174 by @wswld
+    Changes dependency from django-autoslug to django-autoslug-iplweb, that
+    works with Django 2.0, and which is maintained by @mpasternak
+
+2018-02-15 3.4.0
+
+    - Drop support for django<1.8 and django-rest-framework<3.4
+    - Fix memory widget units on OS X
+    - Remove support for django-autocomplete-light v1 (#157)
+    - Update django-rest-framework and django-ajax-selects
+    - Use custom Django>=1.7 lookup to remove spaces from search query string
+    - Update model customization docs for Django 1.9
+    - Add timezone support
+    - Compatibility with Django 2.0
+    - Compatibility with Django 1.11
+    - Move name field to Base model, make not unique
+    - #136: Creating a ModelSerializer
+    - #127: Adds the possibility to customize the alternate_names separator
+    - Fix unidecode warning and add unit test for to_ascii
+    - Switch Country/Region/City lists to sets (speedup)
+	- Call connection.close() only for MySQL (speedup)
+	- Disable progressbar by default (speedup)
+    - Call reset_queries only in DEBUG mode (speedup)
+    - Make dump_fixture APP_NAME aware
+    - Adds migration step in README.rst
+	- improve help text formatting for management commands
+    - fix positional argument handling on django 1.10 for cities_light_fixtures command
+
+2016-05-29 3.3.0
+
+    - #118: Add Django 1.10 support, drop Django 1.7 support by @jpic
+    - #113: Fix DeprecationWarning by @mbaragiola
+    - #106: New management command to work with fixtures by @max-arnold
+    - #108: translation_items_pre_import_signal by @FaBay89
+    - #106: New management command feature by @greeday2
+
+2016-01-10 3.2.0
+
+    - #105: Drop LazyProgressBar, patch was accepted upstream by @max-arnold,
+    - #104: Better feature code filtering by @max-arnold,
+    - #100, #96: The mistery about migrations appearing in some
+      environments but not others has been solved: it was due to the
+      presence of b'' in migration files. A new test was added to fail if
+      django wants to create new migrations in any environment.
+    - Phone number was required to create a country, it's not anymore.
+    - Support Django 1.7 to 1.9, thanks @suquant for helping,
+    - Support for 1.7 will drop when 1.10 is released, unless someone
+      contributes compatibility in cities_light options declaration,
+    - Bugfix in import: some search names would not be generated in some
+      cases due to unpredictability of the iteration order on
+      translation_data.items()
+    - Test with django-dbdiff are much faster than importing the whole data
+    - Tox for testing, coverage
+
+2015-04-02 3.1.2
+
+    Django 1.8 compatibility by @suquant
+
+2015-03-23 3.1.1
+
+    Use named indexes for geonames data contributed by Alexey Evseev.
+
+2015-03-04 3.1.0
+
+    Pluggable models feature contributed by Alexey Evseev.
+
+2015-02-19 3.0.5
+
+    Added CITIES_LIGHT_INCLUDE_COUNTRIES setting.
+
+2015-01-28 3.0.4
+
+    Windows support by forcing utf8 by Mikael Österberg.
+
+2015-01-21 3.0.3
+
+    Django-restframework support updated by @moimael.
+
+2014-11-24 3.0.2
+
+    Make db_index optional on City table. It generates the missing migration
+    files that was added in your current project.
+
+2014-11-06 3.0.1
+
+    Fixed MySQL Django 1.7 migrations support.
+
+2014-10-31 3.0.0
+
+    - #63: Django 1.7 support,
+    - Require Django >= 1.6 for django.db.transaction.atomic,
+    - Apparently stable MySQL support.
+
+MySQL users should use 3.0.0.
+
+PostgreSQL and SQLite users are free to keep on using 2.x.x which supports
+Django >= 1.4.
+
 2014-04-30 2.4.2
 
     - #55: Warn users about SOUTH_MIGRATION_MODULES in migrations/__init__.py
@@ -41,7 +141,7 @@
 
     - Fixed #43: load cities with the same name from different
       regions, by @dpoirier
- 
+
 2014-02-02 2.1.11
 
     - Django 1.7 support: remove migrations in pre-install.
@@ -123,7 +223,7 @@ Awesome contributions were merged:
 
 2013-06-26 2.0.8
 
-    - Merge #22: ugettext_lazy instead of ugettext. 
+    - Merge #22: ugettext_lazy instead of ugettext.
     - Added Aaron VanDerlip to AUTHORS.
     - Promoted dev status to 5 Stable.
 
@@ -156,7 +256,7 @@ Awesome contributions were merged:
 
 2012-07-12 2.0.2
 
-    - Wrap management command in a transaction. (contributed by Piet Delport)
+    - Wrap management command in a transaction. (contributed by Pi Delport)
 
 2012-07-10 2.0.1
 

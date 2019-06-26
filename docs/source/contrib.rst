@@ -10,16 +10,16 @@ For django-ajax-selects
 For djangorestframework
 -----------------------
 
-The contrib contains support for both v1 and v2 of django restframework.
+The contrib contains support for v3 of django restframework.
 
-Django REST framework 2
+Django REST framework 3
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 This contrib package defines list and detail endpoints for City, Region and
-Country. If rest_framework (v2) is installed, all you have to do is add this url
+Country. If rest_framework (v3) is installed, all you have to do is add this url
 include::
 
-    url(r'^cities_light/api/', include('cities_light.contrib.restframework2')),
+    url(r'^cities_light/api/', include('cities_light.contrib.restframework3')),
 
 This will configure six endpoints::
 
@@ -28,7 +28,7 @@ This will configure six endpoints::
     ^countries/$ [name='cities-light-api-country-list']
     ^countries/(?P<pk>[^/]+)/$ [name='cities-light-api-country-detail']
     ^regions/$ [name='cities-light-api-region-list']
-    ^regions/(?P<pk>[^/]+)/$ [name='cities-light-api-region-detail'] 
+    ^regions/(?P<pk>[^/]+)/$ [name='cities-light-api-region-detail']
 
 All list endpoints support search with a query parameter q::
     /cities/?q=london
@@ -39,33 +39,7 @@ for these models and therefore every response object contains url to self field 
 urls for related models. You can configure pagination using the standard rest_framework
 pagination settings in your project settings.py.
 
-.. automodule:: cities_light.contrib.restframework2
-
-For django-autocomplete-light
------------------------------
-
-For autocomplete-light, we propose an autocomplete channel that attempts to
-behave like google map's autocomplete. We did some research and it turns out
-every user is apparently able to use it without problems.
-
-.. _basic-channel:
-
-Basic Channel
-~~~~~~~~~~~~~
-
-.. automodule:: cities_light.contrib.autocomplete_light_channels
-   :members:
-
-.. _remote-channel:
-
-Remote channels
-~~~~~~~~~~~~~~~
-
-Check out the :ref:`example usage <autocompletelight:remote-example>`. This is
-the API:
-
-.. automodule:: cities_light.contrib.autocomplete_light_restframework
-   :members:
+.. automodule:: cities_light.contrib.restframework3
 
 Ideas for contributions
 -----------------------

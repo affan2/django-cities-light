@@ -1,9 +1,16 @@
-.idea/
 .Python
 *.pyc
+*.orig
+.cache/
+*,cover
+.coverage
+.tox/
+.idea/
+*.sqlite
+
 *.egg-info
-build
-dist
+build/
+dist/
 
 # Ignore the downloaded data.
-cities_light/data
+cities_light/data/

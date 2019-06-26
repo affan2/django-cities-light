@@ -1,27 +1,38 @@
+sudo: false
 language: python
-matrix:
-  exclude:
-    - python: "3.3"
-      env: REQ="django<1.5" DB=postgresql CITIES_LIGHT_CITY_SOURCE=cities1000
 python:
-  - "2.7"
-  - "3.3"
+- '3.5'
+matrix:
+  allow_failures:
+  - env: TOXENV=py35-djangodev-sqlite
+  - env: TOXENV=py35-djangodev-mysql
+  - env: TOXENV=py35-djangodev-postgresql
+  - env: TOXENV=py35-django110-mysql
 env:
-  - REQ="django<1.5" DB=postgresql CITIES_LIGHT_CITY_SOURCE=cities1000
-  - REQ="django<1.6" DB=postgresql
-  - REQ="-e git+https://github.com/django/django.git@1.7b2#egg=django" DB=postgresql
-  - REQ="django<1.7" DB=postgresql
-  - REQ="django<1.7" DB=mysql
-  - REQ="django<1.7" DB=sqlite
+  matrix:
+  - TOXENV=py27-django111-sqlite
+  - TOXENV=py35-django111-sqlite
+  - TOXENV=py35-django20-sqlite
+  - TOXENV=py35-djangodev-sqlite
+  - TOXENV=py35-djangodev-mysql
+  - TOXENV=py35-djangodev-postgresql
+  - TOXENV=checkqa
+  - TOXENV=docs
 install:
-  - pip install -q $REQ --use-mirrors
-  - pip install pep8 --use-mirrors
-  - pip install https://github.com/dcramer/pyflakes/tarball/master
-  - python setup.py install
-before_script:
-  - "pep8 --ignore=E124,E128 --exclude=tests,south_migrations,migrations,vendor cities_light"
-  - mysql -e 'create database cities_light_test;'
-  - psql -c 'create database cities_light_test;' -U postgres
+- pip install -U pip
+- pip install tox codecov
 script:
-  - python setup.py test
-  - bash test.sh
+- tox
+after_success:
+- codecov
+cache:
+  directories:
+  - "$HOME/.cache/pip"
+before_cache:
+- rm -f $HOME/.cache/pip/log/debug.log
+notifications:
+  irc:
+    channels:
+    - irc.freenode.org#yourlabs
+    template:
+    - "%{repository} (%{commit} %{author}) : %{message} %{build_url} %{compare_url}"

@@ -2,13 +2,14 @@ from __future__ import unicode_literals
 
 from django import forms
 
-from .models import Country, Region, City
-from hvad.forms import TranslatableModelForm
+from .loading import get_cities_models
+
+Country, Region, City = get_cities_models()
 
 __all__ = ['CountryForm', 'RegionForm', 'CityForm']
 
 
-class CountryForm(TranslatableModelForm):
+class CountryForm(forms.ModelForm):
     """
     Country model form.
     """
@@ -17,7 +18,7 @@ class CountryForm(TranslatableModelForm):
         exclude = ('name_ascii', 'slug', 'geoname_id')
 
 
-class RegionForm(TranslatableModelForm):
+class RegionForm(forms.ModelForm):
     """
     Region model form.
     """
@@ -27,7 +28,7 @@ class RegionForm(TranslatableModelForm):
                    'geoname_code')
 
 
-class CityForm(TranslatableModelForm):
+class CityForm(forms.ModelForm):
     """
     City model form.
     """

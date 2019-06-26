@@ -16,23 +16,22 @@ import os, sys, os.path
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../../'))
-sys.path.insert(0, os.path.abspath('../../../../lib/python2.7/site-packages/'))
+import django
 from django.conf import settings
-settings.configure()
+settings.configure(
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'cities_light'
+    ]
+)
+django.setup()
 
 autoclass_content = "both"
-
-import os
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-if on_rtd:
-    intersphinx_mapping = {
-        'autocompletelight': ('http://django-autocomplete-light.readthedocs.org/en/latest/', None),
-    }
-else:
-    intersphinx_mapping = {
-        'autocompletelight': ('file:///home/jpic/env/src/autocomplete-light/docs/build/html/', None),
-    }
 
 import cities_light
 
@@ -59,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'django-cities-light'
-copyright = u'2012-2014, James Pic & contributors'
+copyright = u'2012-2016, James Pic & contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
