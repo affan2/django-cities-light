@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-import pytest
+#import pytest
 import io
 from django import test
 from django.apps import apps
