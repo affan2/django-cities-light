@@ -42,7 +42,7 @@ class Geonames(object):
 
     def download(self, url, path, force=False):
         downloader = Downloader()
-        # Returns true or false(either downloded or not based on
+        # Returns true or false(either downloaded or not based on
         # the condition in downloader.py)
         return downloader.download(
             source=url,
@@ -69,13 +69,14 @@ class Geonames(object):
 
         for line in file:
             if not six.PY3:
-                # In python3 this is already an unicode
+                # In python3 this is already in unicode
                 line = line.decode('utf8')
 
             line = line.strip()
             # If the line is blank/empty or a comment, skip it and continue
             if len(line) < 1 or line[0] == '#':
                 continue
+
             # Split on tab character and strip the new line character
             yield [e.strip() for e in line.split('\t')]
 

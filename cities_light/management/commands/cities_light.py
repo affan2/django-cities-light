@@ -336,6 +336,7 @@ It is possible to force the import of files which weren't downloaded using the
 
         save = False
         if region.name != name:
+            name.replace("'", r"\'")
             region.name = name
             save = True
 

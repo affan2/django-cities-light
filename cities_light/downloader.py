@@ -25,13 +25,13 @@ class Downloader(object):
             logger.warning('Download source matches destination file')
             return False
         # Checking if download is needed i.e. names are different but
-        # they are same file essentiallly
+        # they are same file essentially
         # If needed continue else return.
         if not self.needs_downloading(source, destination, force):
             logger.warning(
                 'Assuming local download is up to date for %s', source)
             return False
-        # If the files are diffrent, download/copy happens
+        # If the files are different, download/copy happens
         logger.info('Downloading %s into %s', source, destination)
         source_stream = urlopen(source)
         # wb: open as write and binary mode
