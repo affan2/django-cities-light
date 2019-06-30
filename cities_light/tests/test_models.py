@@ -67,8 +67,9 @@ class TestModels(test.TransactionTestCase):
             e.exception.messages[0], 'Timezone validation error: Mars/Cidonia')
         self.assertEqual(e.exception.code, 'timezone_error')
 
+        # Should not be in the try clause as it is needed in the except clause as well.
+        value = 'Asia/Novokuznetsk'
         try:
-            value = 'Asia/Novokuznetsk'
             timezone_validator(value)
         except Exception:
             self.assertTrue(

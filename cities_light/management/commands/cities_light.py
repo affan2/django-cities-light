@@ -117,8 +117,8 @@ It is possible to force the import of files which weren't downloaded using the
         """Start progress bar."""
         if self.progress_enabled:
             self.progress = progressbar.ProgressBar(
-                max_value=max_value,
-                widgets=self.progress_widgets
+                maxval=max_value,
+                widgets=self.progress_widgets,
             ).start()
 
     def progress_update(self, value):
@@ -269,7 +269,10 @@ It is possible to force the import of files which weren't downloaded using the
             country_items_pre_import.send(sender=self, items=items)
         except InvalidItems:
             return
-
+        # This variable is needed later regardless of whether the try block succeeds or passes.
+        # If the next try block fails and runs into an excpetion, then force_update will
+        # be unassigned and undefined. And this will cause problems when the next piece of code invokes it.
+        force_update = False
         try:
             force_insert = False
             force_update = False
