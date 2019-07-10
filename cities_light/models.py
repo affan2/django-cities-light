@@ -52,12 +52,12 @@ Steps to customise cities_light models
 
         CITIES_LIGHT_APP_NAME = 'yourapp'
 
-        # Disable built-in cities_light migrations
+        # Disable built-in cities_light south_migrations
         MIGRATION_MODULES = {
             'cities_light': None
         }
 
-- Create your own migrations:
+- Create your own south_migrations:
     .. code::
 
         python manage.py makemigrations yourapp
@@ -73,7 +73,7 @@ That's all!
       default signals).
     - if in further versions of cities_light abstract models will be
       updated (some fields will be added/removed), you have to deal with
-      migrations by yourself, as models are on your own now.
+      south_migrations by yourself, as models are on your own now.
 """
 
 # some imports are present for backwards compatibility and migration process

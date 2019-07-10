@@ -316,9 +316,10 @@ It is possible to force the import of files which weren't downloaded using the
         except InvalidItems:
             return
 
+        force_insert = False
+        force_update = False
+
         try:
-            force_insert = False
-            force_update = False
             region = Region.objects.get(geoname_id=items[IRegion.geonameid])
             force_update = True
         except Region.DoesNotExist:

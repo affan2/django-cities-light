@@ -1,5 +1,5 @@
 """
-Django migrations for cities_light app
+Django south_migrations for cities_light app
 """
 
 # Ensure the user is not using Django 1.7
