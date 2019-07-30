@@ -57,10 +57,10 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'django-cities-light'
-copyright = u'2012-2016, James Pic & contributors'
+project = 'django-cities-light'
+copyright = '2012-2016, James Pic & contributors'
 
-# The version info for the project you're documenting, acts as replacement for
+# The version info for the project yo're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
@@ -200,8 +200,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'django-cities-light.tex', u'django-cities-light Documentation',
-   u'James Pic', 'manual'),
+  ('index', 'django-cities-light.tex', 'django-cities-light Documentation',
+   'James Pic', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -230,8 +230,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'django-cities-light', u'django-cities-light Documentation',
-     [u'James Pic'], 1)
+    ('index', 'django-cities-light', 'django-cities-light Documentation',
+     ['James Pic'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -244,8 +244,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'django-cities-light', u'django-cities-light Documentation',
-   u'James Pic', 'django-cities-light', 'One line description of project.',
+  ('index', 'django-cities-light', 'django-cities-light Documentation',
+   'James Pic', 'django-cities-light', 'One line description of project.',
    'Miscellaneous'),
 ]
 

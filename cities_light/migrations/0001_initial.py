@@ -1,5 +1,5 @@
 # encoding: utf8
-from __future__ import unicode_literals
+
 
 from django.db import models, migrations
 import autoslug.fields
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(unique=True, max_length=200)),
                 ('code2', models.CharField(max_length=2, unique=True, null=True, blank=True)),
                 ('code3', models.CharField(max_length=3, unique=True, null=True, blank=True)),
-                ('continent', models.CharField(db_index=True, max_length=2, choices=[('OC', 'Oceania'), ('EU', 'Europe'), ('AF', 'Africa'), ('NA', 'North America'), ('AN', 'Antarctica'), ('SA', 'South America'), ('AS', 'Asia')])),
+                ('continent', models.CharField(db_index=True, max_length=2, choices=[('OC', 'Oceania'), ('E', 'Europe'), ('AF', 'Africa'), ('NA', 'North America'), ('AN', 'Antarctica'), ('SA', 'South America'), ('AS', 'Asia')])),
                 ('tld', models.CharField(db_index=True, max_length=5, blank=True)),
                 ('phone', models.CharField(max_length=20, null=True)),
             ],

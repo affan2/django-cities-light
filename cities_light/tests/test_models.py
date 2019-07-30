@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """Test for models methods."""
-from __future__ import unicode_literals
+
 
 from django import test
 from django.conf import settings
@@ -86,7 +86,7 @@ class TestModels(test.TransactionTestCase):
             name='Country',
             name_ascii='Country',
             geoname_id='123456',
-            continent='EU')
+            continent='E')
         country.save()
 
         region = region_model(

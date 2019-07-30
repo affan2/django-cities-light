@@ -1,4 +1,4 @@
-# from __future__ import unicode_literals
+#
 #
 # from dbdiff.fixture import Fixture
 # from .base import TestImportBase, FixtureDir

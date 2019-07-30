@@ -1,4 +1,4 @@
-from __future__ import division, unicode_literals
+
 
 import collections
 import itertools
@@ -11,7 +11,7 @@ if sys.platform != 'win32':
     import resource
 
 try:
-    import cPickle as pickle
+    import pickle
 except ImportError:
     import pickle
 
@@ -532,14 +532,14 @@ It is possible to force the import of files which weren't downloaded using the
             return
 
         max = 0
-        for model_class, model_class_data in data.items():
-            max += len(model_class_data.keys())
+        for model_class, model_class_data in list(data.items()):
+            max += len(list(model_class_data.keys()))
 
         i = 0
         self.progress_start(max)
 
-        for model_class, model_class_data in data.items():
-            for geoname_id, geoname_data in model_class_data.items():
+        for model_class, model_class_data in list(data.items()):
+            for geoname_id, geoname_data in list(model_class_data.items()):
                 try:
                     model = model_class.objects.get(geoname_id=geoname_id)
                 except model_class.DoesNotExist:
@@ -547,7 +547,7 @@ It is possible to force the import of files which weren't downloaded using the
 
                 save = False
                 alternate_names = set()
-                for lang, names in geoname_data.items():
+                for lang, names in list(geoname_data.items()):
                     if lang == 'post':
                         # we might want to save the postal codes somewhere
                         # here's where it will all start ...

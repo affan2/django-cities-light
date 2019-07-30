@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 import re
 import autoslug
@@ -25,7 +25,7 @@ __all__ = ['AbstractCountry', 'AbstractRegion', 'AbstractCity',
 
 CONTINENT_CHOICES = (
     ('OC', _('Oceania')),
-    ('EU', _('Europe')),
+    ('E', _('Europe')),
     ('AF', _('Africa')),
     ('NA', _('North America')),
     ('AN', _('Antarctica')),
