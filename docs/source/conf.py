@@ -18,6 +18,7 @@ import os, sys, os.path
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 import django
 from django.conf import settings
+from django.contrib.auth import get_user_model
 settings.configure(
     INSTALLED_APPS = [
         'django.contrib.admin',

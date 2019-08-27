@@ -4,6 +4,8 @@
 
 from django import test
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from ..loading import get_cities_model

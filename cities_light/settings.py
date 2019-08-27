@@ -97,6 +97,7 @@ because it's probably project specific.
 import os.path
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 __all__ = [
     'FIXTURES_BASE_URL', 'COUNTRY_SOURCES', 'REGION_SOURCES', 'CITY_SOURCES',

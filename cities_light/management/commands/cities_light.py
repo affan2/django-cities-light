@@ -16,6 +16,8 @@ except ImportError:
     import pickle
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model
 from django.db import transaction, connection
 from django.db import reset_queries, IntegrityError
 from django.core.management.base import BaseCommand
