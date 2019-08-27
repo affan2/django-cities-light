@@ -10,10 +10,12 @@ from .settings import *
 from .abstract_models import to_search
 from .loading import get_cities_models
 
+from general.admin import CustomTranslatableAdmin
+
 Country, Region, City = get_cities_models()
 
 
-class CountryAdmin(admin.ModelAdmin):
+class CountryAdmin(CustomTranslatableAdmin):
     """
     ModelAdmin for Country.
     """
@@ -44,7 +46,7 @@ class CountryAdmin(admin.ModelAdmin):
 admin.site.register(Country, CountryAdmin)
 
 
-class RegionAdmin(admin.ModelAdmin):
+class RegionAdmin(CustomTranslatableAdmin):
     """
     ModelAdmin for Region.
     """
@@ -69,14 +71,14 @@ admin.site.register(Region, RegionAdmin)
 
 
 class CityChangeList(ChangeList):
-    def get_query_set(self, request):
+    def get_queryset(self, request):
         if 'q' in list(request.GET.keys()):
             request.GET = copy(request.GET)
             request.GET['q'] = to_search(request.GET['q'])
-        return super(CityChangeList, self).get_query_set(request)
+        return super(CityChangeList, self).get_queryset(request)
 
 
-class CityAdmin(admin.ModelAdmin):
+class CityAdmin(CustomTranslatableAdmin):
     """
     ModelAdmin for City.
     """

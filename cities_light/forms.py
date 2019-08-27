@@ -4,12 +4,14 @@ from django import forms
 
 from .loading import get_cities_models
 
+from hvad.forms import TranslatableModelForm
+
 Country, Region, City = get_cities_models()
 
 __all__ = ['CountryForm', 'RegionForm', 'CityForm']
 
 
-class CountryForm(forms.ModelForm):
+class CountryForm(TranslatableModelForm):
     """
     Country model form.
     """
@@ -18,7 +20,7 @@ class CountryForm(forms.ModelForm):
         exclude = ('name_ascii', 'slug', 'geoname_id')
 
 
-class RegionForm(forms.ModelForm):
+class RegionForm(TranslatableModelForm):
     """
     Region model form.
     """
@@ -28,7 +30,7 @@ class RegionForm(forms.ModelForm):
                    'geoname_code')
 
 
-class CityForm(forms.ModelForm):
+class CityForm(TranslatableModelForm):
     """
     City model form.
     """

@@ -43,7 +43,13 @@ def city_search_names(sender, instance, **kwargs):
         for n in instance.alternate_names.split(';'):
             city_names.add(n)
 
-    if instance.region_id:
+    try:
+        instance.region.name
+        regoin_flag = True
+    except:
+        regoin_flag = False
+
+    if instance.region_id and regoin_flag:
         region_names = set((instance.region.name,))
         if instance.region.alternate_names:
             for n in instance.region.alternate_names.split(';'):
@@ -56,9 +62,10 @@ def city_search_names(sender, instance, **kwargs):
             name = to_search(city_name + country_name)
             search_names.add(name)
 
-            for region_name in region_names:
-                name = to_search(city_name + region_name + country_name)
-                search_names.add(name)
+            if instance.region_id and regoin_flag:
+                for region_name in region_names:
+                    name = to_search(city_name + region_name + country_name)
+                    search_names.add(name)
 
     instance.search_names = ' '.join(sorted(search_names))
 

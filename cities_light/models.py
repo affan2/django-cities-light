@@ -82,7 +82,8 @@ from .abstract_models import (AbstractCountry, AbstractRegion, AbstractCity,
 from .signals import *
 from .receivers import *
 from .settings import *
-from general.managers import TranslateEntityManager, CustomEntityManager
+
+from hvad.models import TranslatedFields
 
 __all__ = ['CONTINENT_CHOICES', 'to_search', 'to_ascii', 'filter_non_cities',
     'filter_non_included_countries_country',
@@ -91,20 +92,22 @@ __all__ = ['CONTINENT_CHOICES', 'to_search', 'to_ascii', 'filter_non_cities',
 
 if CITIES_LIGHT_APP_NAME == DEFAULT_APP_NAME:
     class Country(AbstractCountry):
-        objects = CustomEntityManager()
-        published = TranslateEntityManager()
+        translations = TranslatedFields()
+
     connect_default_signals(Country)
 
     __all__.append('Country')
 
     class Region(AbstractRegion):
-        pass
+        translations = TranslatedFields()
+
     connect_default_signals(Region)
 
     __all__.append('Region')
 
     class City(AbstractCity):
-        pass
+        translations = TranslatedFields()
+
     connect_default_signals(City)
 
     __all__.append('City')
