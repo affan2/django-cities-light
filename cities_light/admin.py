@@ -21,7 +21,7 @@ class CountryAdmin(CustomTranslatableAdmin):
     """
 
     list_display = (
-        'name',
+        'name_',
         'code2',
         'code3',
         'continent',
@@ -30,7 +30,7 @@ class CountryAdmin(CustomTranslatableAdmin):
         'geoname_id',
     )
     search_fields = (
-        'name',
+        'name_',
         'name_ascii',
         'code2',
         'code3',
@@ -55,12 +55,12 @@ class RegionAdmin(CustomTranslatableAdmin):
         'country',
     )
     search_fields = (
-        'name',
+        'name_',
         'name_ascii',
         'geoname_id',
     )
     list_display = (
-        'name',
+        'name_',
         'country',
         'geoname_id',
     )
@@ -83,7 +83,7 @@ class CityAdmin(CustomTranslatableAdmin):
     ModelAdmin for City.
     """
     list_display = (
-        'name',
+        'name_',
         'region',
         'country',
         'geoname_id',
