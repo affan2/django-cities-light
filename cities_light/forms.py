@@ -1,10 +1,8 @@
-
-
-from django import forms
-
 from .loading import get_cities_models
 
 from hvad.forms import TranslatableModelForm
+
+from dal import autocomplete
 
 Country, Region, City = get_cities_models()
 
@@ -36,5 +34,13 @@ class CityForm(TranslatableModelForm):
     """
     class Meta:
         model = City
+        widgets = {
+            'region': autocomplete.ModelSelect2(
+                url='region-autocomplete',
+            ),
+            'country': autocomplete.ModelSelect2(
+                url='country-autocomplete',
+            ),
+        }
         exclude = ('name_ascii', 'search_names', 'slug', 'geoname_id',
                    'display_name', 'feature_code')

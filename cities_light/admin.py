@@ -61,10 +61,13 @@ class RegionAdmin(CustomTranslatableAdmin):
     )
     list_display = (
         'name_',
-        'country',
+        'get_country',
         'geoname_id',
     )
     form = RegionForm
+
+    def get_country(self, obj):
+        return obj.country
 
 
 admin.site.register(Region, RegionAdmin)
@@ -84,8 +87,8 @@ class CityAdmin(CustomTranslatableAdmin):
     """
     list_display = (
         'name_',
-        'region',
-        'country',
+        'get_region',
+        'get_country',
         'geoname_id',
         'timezone'
     )
@@ -103,6 +106,12 @@ class CityAdmin(CustomTranslatableAdmin):
 
     def get_changelist(self, request, **kwargs):
         return CityChangeList
+
+    def get_region(selfs, obj):
+        return obj.region
+
+    def get_country(self, obj):
+        return obj.country
 
 
 admin.site.register(City, CityAdmin)
