@@ -1,12 +1,9 @@
-
-
 from copy import copy
 
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
 
 from .forms import *
-from .settings import *
 from .abstract_models import to_search
 from .loading import get_cities_models
 
@@ -109,9 +106,11 @@ class CityAdmin(CustomTranslatableAdmin):
 
     def get_region(selfs, obj):
         return obj.region
+    get_region.short_description = 'region'
 
     def get_country(self, obj):
         return obj.country
+    get_country.short_description = 'country'
 
 
 admin.site.register(City, CityAdmin)
