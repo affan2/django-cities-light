@@ -121,6 +121,7 @@ class AbstractCountry(Base, TranslatableModel):
     class Meta(Base.Meta):
         verbose_name_plural = _('countries')
         abstract = True
+        ordering = ['name']
 
     @property
     def name_(self):
@@ -171,6 +172,7 @@ class AbstractRegion(Base, TranslatableModel):
         verbose_name = _('region/state')
         verbose_name_plural = _('regions/states')
         abstract = True
+        ordering = ['name']
 
     @property
     def name_(self):
@@ -194,6 +196,8 @@ class ToSearchTextField(models.TextField):
     Trivial TextField subclass that passes values through to_search
     automatically.
     """
+
+
 ToSearchTextField.register_lookup(ToSearchIContainsLookup)
 
 
@@ -260,6 +264,7 @@ class AbstractCity(Base, TranslatableModel):
         unique_together = (('region', 'slug'))
         verbose_name_plural = _('cities')
         abstract = True
+        ordering = ['name']
 
     @property
     def name_(self):
