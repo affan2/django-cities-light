@@ -36,10 +36,10 @@ class CityForm(TranslatableModelForm):
         model = City
         widgets = {
             'region': autocomplete.ModelSelect2(
-                url='region-autocomplete',
+                url='autocomplete:region-autocomplete',
             ),
             'country': autocomplete.ModelSelect2(
-                url='country-autocomplete',
+                url='autocomplete:country-autocomplete',
             ),
         }
         exclude = ('name_ascii', 'search_names', 'slug', 'geoname_id',
